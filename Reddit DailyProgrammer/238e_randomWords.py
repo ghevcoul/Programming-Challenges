@@ -15,11 +15,11 @@ letters = {
 
 template = sys.argv[1]
 
-newWord = []
+word = []
 for i in template:
     try:
-        newWord.append(random.choice(letters[i]))
+        word.append(random.choice(letters[i]))
     except KeyError:
         sys.exit("Invalid input!")
-print(''.join(newWord))
+print(''.join(word))
 
