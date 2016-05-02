@@ -112,7 +112,7 @@ def write_tree(tree, filename):
         dwg.add(dwg.line(
             start=branch[:2],
             end=branch[2:],
-            stroke="black",
+            stroke="(255,255,255)",
             stroke_width=width
             ))
 
