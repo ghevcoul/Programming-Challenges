@@ -17,16 +17,19 @@ import random
 
 import svgwrite
 
-# Needed to define each branch of the tree:
-# starting point
-# branch length
-# branch angle
-
 # Given start = (x, y), length = r, angle = theta
 # x2 = x + r * cos(theta)
 # y2 = y + r * sin(theta)
 
-def build_tree(start, branch_len, angle):
+DELTA_LENGTH = 0.61
+DELTA_ANGLE = 45
+
+MIN_ANGLE = 15
+MAX_ANGLE = 60
+MIN_LENGTH = 0.5
+MAX_LENGTH = 0.8
+
+def build_tree(start, branch_len, angle, use_random=True):
     """
     A recursive function to build a fractal tree.
 
@@ -46,15 +49,20 @@ def build_tree(start, branch_len, angle):
         y_end = start[1] + (branch_len * math.sin(math.radians(angle)))
         tree.append((start[0], start[1], x_end, y_end))
 
-        # build the right branch
-        right_angle = angle - 45
-        right_branch_len = branch_len - 20
-        tree += build_tree((x_end, y_end), right_branch_len, right_angle)
+        if use_random:
+            r_angle = angle - random.randrange(MIN_ANGLE, MAX_ANGLE)
+            l_angle = angle + random.randrange(MIN_ANGLE, MAX_ANGLE)
+            r_len = branch_len * random.uniform(MIN_LENGTH, MAX_LENGTH)
+            l_len = branch_len * random.uniform(MIN_LENGTH, MAX_LENGTH)
+        else:
+            r_angle = angle - DELTA_ANGLE
+            l_angle = angle + DELTA_ANGLE
+            r_len = branch_len * DELTA_LENGTH
+            l_len = branch_len * DELTA_LENGTH
 
-        # build the left branch
-        left_angle = angle + 45
-        left_branch_len = branch_len - 20
-        tree += build_tree((x_end, y_end), left_branch_len, left_angle)
+        # build the branches
+        tree += build_tree((x_end, y_end), r_len, r_angle, use_random=use_random)
+        tree += build_tree((x_end, y_end), l_len, l_angle, use_random=use_random)
 
         return tree
 
@@ -98,41 +106,7 @@ def write_tree(tree, filename):
     # Save the drawing
     dwg.save()
 
-# def tree(branchLen, t):
-#     if branchLen > 5:
-#         if branchLen >= 13:
-#             t.color("burlywood3")
-#         else:
-#             t.color("green")
-#         t.width(branchLen // 7)
-#         t.forward(branchLen)
-#         r = random.randrange(15, 35)
-#         l = random.randrange(15, 35)
-#         t.right(r)
-#         tree(branchLen - random.randrange(5, 20), t)
-#         t.left(r+l)
-#         tree(branchLen - random.randrange(5, 20), t)
-#         t.right(l)
-#         if branchLen >= 13:
-#             t.color("burlywood3")
-#         else:
-#             t.color("green")
-#         t.backward(branchLen)
-
-# def main():
-#     t = turtle.Turtle()
-#     myWin = turtle.Screen()
-#     t.left(90)
-#     t.up()
-#     t.backward(200)
-#     t.down()
-#     #t.color("brown")
-#     tree(85, t)
-#     myWin.exitonclick()
-
 if __name__ == "__main__":
-    TREE = build_tree((0, 0), 80, 270)
-    for line in TREE:
-        print(line)
+    TREE = build_tree((0, 0), 100, 270, use_random=True)
     write_tree(TREE, "test.svg")
 
