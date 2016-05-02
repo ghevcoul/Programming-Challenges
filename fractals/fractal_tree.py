@@ -24,7 +24,7 @@ import svgwrite
 DELTA_LENGTH = 0.61
 DELTA_ANGLE = 45
 
-MIN_ANGLE = 15
+MIN_ANGLE = 20
 MAX_ANGLE = 60
 MIN_LENGTH = 0.5
 MAX_LENGTH = 0.8
@@ -91,6 +91,12 @@ def tree_normalize(tree):
             ))
     return new_tree
 
+def find_branch_length(branch):
+    """
+    Calculates the length of the given branch.
+    """
+    return math.sqrt((branch[2] - branch[0])**2 + (branch[3] - branch[1])**2)
+
 def write_tree(tree, filename):
     """
     Takes a list of line segments defining a tree and writes them to an SVG file.
@@ -99,9 +105,18 @@ def write_tree(tree, filename):
     dwg = svgwrite.Drawing(filename=filename)
 
     # Add each branch to the drawing
-    # TODO: vary line width as a function of branch length
     for branch in tree:
-        dwg.add(dwg.line(start=branch[:2], end=branch[2:], stroke="black"))
+        width = math.floor(find_branch_length(branch) / 8)
+        if width < 1:
+            width = 1
+        dwg.add(dwg.line(
+            start=branch[:2],
+            end=branch[2:],
+            stroke="black",
+            stroke_width=width
+            ))
+
+    svgwrite.mixins.Presentation.stroke(dwg, linejoin="round")
 
     # Save the drawing
     dwg.save()
