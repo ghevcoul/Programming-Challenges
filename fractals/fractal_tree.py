@@ -40,7 +40,7 @@ def build_tree(start, branch_len, angle, use_random=True):
     Output:
     tree - list of (x1, y1, x2, y2) defining the line segments of this tree
     """
-    if branch_len <= 5:
+    if branch_len <= 2:
         return []
     else:
         tree = []
@@ -109,10 +109,13 @@ def write_tree(tree, filename):
         width = math.floor(find_branch_length(branch) / 8)
         if width < 1:
             width = 1
+        color = svgwrite.rgb(139, 69, 19)
+        if find_branch_length(branch) < 6:
+            color = svgwrite.rgb(34, 139, 34)
         dwg.add(dwg.line(
             start=branch[:2],
             end=branch[2:],
-            stroke="(255,255,255)",
+            stroke=color,
             stroke_width=width
             ))
 
